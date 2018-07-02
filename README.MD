@@ -223,6 +223,14 @@ This field yields a list of item dates for items which are duplicates of a given
 
 For a given item, this field yields the MD5 value of that item's top level item, if it has one, or blank if the item does not have a top level item.  For items which are themself top level, this will yield the item's own MD5 value.
 
+### Top Level SHA1
+
+Exports a field with the SHA1 of an item's top level item (if it has one).
+
+### Top Level SHA256
+
+Exports a field with the SHA256 of an item's top level item (if it has one).
+
 ### Has Production Set
 
 For a given item, this field yields `true` or `false`.  `true` if the item is in at least one production set, otherwise `false`.
@@ -252,6 +260,38 @@ For a given item, lists a semicolon/space (`; `) delimited listing of the locali
 ### Material Descendant Names
 
 For a given item, lists a semicolon/space (`; `) delimited listing of the localised names of all audited (AKA material) descendants.
+
+### All Custodians
+
+Yields a semicolon delimited list of all custodians which have an MD5 duplicate of the given item.
+
+### Top Level All Custodians
+
+Yields a semicolon delimited list of all custodians which have a top level MD5 duplicate of the given item, if the item is itself top level
+
+### Family Count
+
+Yields the number of items in the family this item belongs to.
+
+### Material Family Count
+
+Yields the number of items in the family this item belongs to that are material/audited.
+
+### Physical File Ancestor Name
+
+Yields the name of the physical file ancestor item, as would be found by the search `flag:physical_file`, if there is one.
+
+### Child MD5 Hashes
+
+Yields a semicolon delimited list containing the MD5 hash of all child items of a given item.
+
+### Child SHA1 Hashes
+
+Yields a semicolon delimited list containing the SHA1 hash of all child items of a given item.
+
+### Child SHA256 Hashes
+
+Yields a semicolon delimited list containing the SHA256 hash of all child items of a given item.
 
 ## Implementing New Fields
 
