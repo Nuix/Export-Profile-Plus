@@ -239,7 +239,7 @@ For a given item, this field yields `true` or `false`.  `true` if the item is in
 
 For a given item, this field yields a semicolon/space (`; `) delimited list of production set names for all production sets in which this item is a member.
 
-### Production Set Names
+### Production Set GUIDs
 
 For a given item, this field yields a semicolon/space (`; `) delimited list of production set GUIDs (the GUID of the production set itself) for all production sets in which this item is a member.
 
