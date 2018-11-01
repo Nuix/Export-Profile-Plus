@@ -106,6 +106,10 @@ The domain being the value of the first and only capture group.  This will yield
 - **BCC Domains**
 	- BCC
 
+### Recipient Count
+
+Exports a field containing the number of recipient (To, CC and BCC) addresses associated with a given item (if any).
+
 ### Binary Available
 
 Exports a field containing `true` or `false` depending on whether Nuix is able to access the binary data of a given item.
@@ -280,6 +284,10 @@ Yields the number of items in the family this item belongs to that are material/
 ### Physical File Ancestor Name
 
 Yields the name of the physical file ancestor item, as would be found by the search `flag:physical_file`, if there is one.
+
+### Physical File Ancestor MD5
+
+Yields the MD5 digest of the physical file ancestor item, as would be found by the search `flag:physical_file`, if there is one.
 
 ### Child MD5 Hashes
 
