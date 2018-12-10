@@ -1,13 +1,13 @@
-class RecipientCountField < CustomFieldBase
+class BccRecipientCountField < CustomFieldBase
 	def initialize
 	end	
 
 	def name
-		return "Recipient Count"
+		return "BCC Recipient Count"
 	end
 
 	def tool_tip
-		return "Exports a count of recipient addresses for an item"
+		return "Exports a count of recipient addresses in the BCC field for an item"
 	end
 
 	def decorate(profile)
@@ -15,7 +15,7 @@ class RecipientCountField < CustomFieldBase
 			begin
 				com = item.getCommunication
 				if !com.nil?
-					address_count = com.getTo.size + com.getCc.size + com.getBcc.size
+					address_count = com.getBcc.size
 					next address_count
 				else
 					next 0

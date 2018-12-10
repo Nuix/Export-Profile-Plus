@@ -110,6 +110,18 @@ The domain being the value of the first and only capture group.  This will yield
 
 Exports a field containing the number of recipient (To, CC and BCC) addresses associated with a given item (if any).
 
+### To Recipient Count
+
+Exports a field containing the number of recipient addresses in the TO field for a given item.
+
+### CC Recipient Count
+
+Exports a field containing the number of recipient addresses in the CC field for a given item.
+
+### BCC Recipient Count
+
+Exports a field containing the number of recipient addresses in the BCC field for a given item.
+
 ### Binary Available
 
 Exports a field containing `true` or `false` depending on whether Nuix is able to access the binary data of a given item.
