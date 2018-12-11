@@ -326,7 +326,38 @@ if dialog.getDialogResult == true
 			if apply_custom_metadata
 				cm = item.getCustomMetadata
 				headers.each_with_index do |header,header_index|
-					cm[header] = record_values[header_index]
+					# Handle a couple fields we know will give us an internal Nuix class when we call evaluateUnformatted
+					if header == "Position" || header == "Language"
+						cm[header] = record_values[header_index]
+					else
+						# Record raw value as custom metadata
+						raw_value = export_fields[header_index].evaluateUnformatted(item)
+
+						# Try to handle some of the undocumented internal data type evaluateUnformatted may provide back
+						if raw_value.nil?
+							raw_value = ""
+						elsif raw_value.is_a?(com.nuix.common.ByteSize)
+							raw_value = raw_value.getValue
+						elsif raw_value.is_a?(com.nuix.util.expression.MultiValue) || raw_value.is_a?(com.nuix.filetype.MimeType)
+							raw_value = record_values[header_index]
+						end
+
+						# First we will try to store as the actual data type returned by evaluateUnformatted
+						raw_value_success = false
+						begin
+							cm[header] = raw_value
+							raw_value_success = true
+						rescue Exception => exc
+							# This both logs that we stored the value as a string and leaves a breadcrumb of the item/field/data type that we had
+							# issue with, in case we hope to add logic to handle the particular data type later
+							puts "Unable to store raw value#{item.getLocalisedName} / #{item.getGuid} / #{header} / #{raw_value.class}, storing value as string"
+						end
+
+						# As a fallback we will just store the value as a string like the script used to
+						if !raw_value_success
+							cm[header] = record_values[header_index]
+						end
+					end
 				end
 			end
 
