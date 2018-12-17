@@ -269,6 +269,14 @@ Added to 'Prod 1' 2017-08-25T20:59:03.855Z; Added to 'Prod 3' 2017-08-25T21:59:0
 
 **Important:** The work needed to collect the production set history information can take a long time upfront in a case with a large history!
 
+### All Production Set DOCIDs
+
+For a given item, this field yields a semicolon/space (`; `) delimited list of DOCIDs for every production set this item is a member of.
+
+### Select Production Set DOCIDs
+
+For a given item, this field yields a semicolon/space (`; `) delimited list of DOCIDs for specifically selected production set this item is a member of.  To determine which production sets are reported, select the relevant production sets in the production sets tab of the settings dialog.
+
 ### Descendant Names
 
 For a given item, lists a semicolon/space (`; `) delimited listing of the localised names of all descendants.
