@@ -7,6 +7,15 @@ class CustomFieldBase
 	def self.item_sets=(value)
 		@@item_sets = value
 	end
+
+	@@prod_sets = []
+	def self.prod_sets
+		return @@prod_sets
+	end
+
+	def self.prod_sets=(value)
+		@@prod_sets = value
+	end
 	
 	def name
 		raise "Derived class must override this method and return a name"
@@ -33,6 +42,12 @@ class CustomFieldBase
 	#Allows the custom field to specify that the user needs to select at least one item set
 	#for this field to operate.  Override and return true if you need a selected item set
 	def needs_item_set
+		return false
+	end
+
+	#Allows the custom field to specify that the user needs to select at least one production set
+	#for this field to operate.  Override and return true if you need a selected production set
+	def needs_prod_set
 		return false
 	end
 

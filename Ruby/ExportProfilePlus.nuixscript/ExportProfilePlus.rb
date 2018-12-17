@@ -102,6 +102,11 @@ item_sets_tab.appendHeader("This tab allows you to define items sets used in scr
 item_set_choices = $current_case.getAllItemSets.map{|set|Choice.new(set,set.getName)}
 item_sets_tab.appendChoiceTable("item_sets","Item Sets",item_set_choices)
 
+prod_sets_tab = dialog.addTab("prod_sets_tab","Production Sets")
+prod_sets_tab.appendHeader("This tab allows you to define production sets used in scripted fields which require a selected production set.")
+prod_set_choices = $current_case.getProductionSets.map{|prod|Choice.new(prod,prod.getName)}
+prod_sets_tab.appendChoiceTable("production_sets","Production Sets",prod_set_choices)
+
 # Define validations of user settings
 dialog.validateBeforeClosing do |values|
 	# Make sure that if were exporting CSV that file path was provided
@@ -184,6 +189,14 @@ dialog.validateBeforeClosing do |values|
 		end
 	end
 
+	# If using fields that require production set selection make sure production sets are selected
+	if values["production_sets"].size < 1
+		if values["custom_fields"].any?{|cf|cf.needs_prod_set == true}
+			CommonDialogs.showWarning("Please select at least one production set on the production sets tab.")
+			next false
+		end
+	end
+
 	next true
 end
 
@@ -198,6 +211,7 @@ if dialog.getDialogResult == true
 	values = dialog.toMap
 
 	CustomFieldBase.item_sets = values["item_sets"]
+	CustomFieldBase.prod_sets = values["production_sets"]
 
 	base_profile = nil
 	if values["use_base_profile"]
