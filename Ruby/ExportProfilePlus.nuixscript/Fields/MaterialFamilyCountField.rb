@@ -17,7 +17,11 @@ class MaterialFamilyCountField < CustomFieldBase
 				if family_items.nil?
 					next 0
 				else
-					material_family_items = family_items.select{|i|i.isAudited}
+					if CustomFieldBase.handle_excluded_items == true
+						material_family_items = family_items.reject{|i|i.isExcluded}.select{|i|i.isAudited}
+					else
+						material_family_items = family_items.select{|i|i.isAudited}
+					end
 					next material_family_items.size
 				end
 			rescue Exception => exc

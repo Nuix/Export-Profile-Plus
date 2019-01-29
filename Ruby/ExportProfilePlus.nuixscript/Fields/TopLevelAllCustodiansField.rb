@@ -19,7 +19,11 @@ class TopLevelAllCustodiansField < CustomFieldBase
 			begin
 				result = []
 				result << item.getCustodian
-				result += item.getDuplicates.select{|i|i.isTopLevel}.map{|i|i.getCustodian}
+				if CustomFieldBase.handle_excluded_items == true
+					result += item.getDuplicates.reject{|i|i.isExcluded}.select{|i|i.isTopLevel}.map{|i|i.getCustodian}
+				else
+					result += item.getDuplicates.select{|i|i.isTopLevel}.map{|i|i.getCustodian}
+				end
 				result = result.reject{|c|c.nil? || c.strip.empty?}
 				result = result.uniq
 				result = result.sort

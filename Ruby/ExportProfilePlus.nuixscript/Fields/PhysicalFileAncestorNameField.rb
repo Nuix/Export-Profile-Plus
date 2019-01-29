@@ -15,6 +15,9 @@ class PhysicalFileAncestorNameField < CustomFieldBase
 			begin
 				result = ""
 				path_items = item.getPath
+				if CustomFieldBase.handle_excluded_items == true
+					path_items = path_items.reject{|i|i.isExcluded}
+				end
 				path_items.each do |path_item|
 					if path_item.isPhysicalFile
 						result = path_item.getLocalisedName

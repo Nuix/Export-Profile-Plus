@@ -17,7 +17,11 @@ class FamilyCountField < CustomFieldBase
 				if family_items.nil?
 					next 0
 				else
-					next family_items.size
+					if CustomFieldBase.handle_excluded_items == true
+						next family_items.reject{|i|i.isExcluded}.size
+					else
+						next family_items.size
+					end
 				end
 			rescue Exception => exc
 				next "Error: #{exc.message}"

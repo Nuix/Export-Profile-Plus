@@ -13,7 +13,11 @@ class DescendantCountField < CustomFieldBase
 	def decorate(profile)
 		return profile.addMetadata(self.name) do |item|
 			begin
-				next item.getDescendants.size
+				if CustomFieldBase.handle_excluded_items == true
+					next item.getDescendants.reject{|i|i.isExcluded}.size
+				else
+					next item.getDescendants.size
+				end
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end

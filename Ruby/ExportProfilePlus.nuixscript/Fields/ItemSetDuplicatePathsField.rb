@@ -15,6 +15,9 @@ class ItemSetDuplicatePaths < CustomFieldBase
 				paths = []
 				CustomFieldBase.item_sets.each do |item_set|
 					dupes = item_set.findDuplicates(item)
+					if CustomFieldBase.handle_excluded_items == true
+						dupes = dupes.reject{|i|i.isExcluded}
+					end
 					dupes.each do |dupe_item|
 						path_string = dupe_item.getPath.map{|i|i.getLocalisedName}.join("/")
 						paths << path_string
