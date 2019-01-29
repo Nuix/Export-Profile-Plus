@@ -13,6 +13,9 @@ class ItemFamilyTextField < CustomFieldBase
 				result = []
 				family_items = item.getFamily
 				if !family_items.nil?
+					if CustomFieldBase.handle_excluded_items == true
+						family_items = family_items.reject{|i|i.isExcluded}
+					end
 					family_items.each do |family_item|
 						result << family_item.getTextObject.toString
 					end

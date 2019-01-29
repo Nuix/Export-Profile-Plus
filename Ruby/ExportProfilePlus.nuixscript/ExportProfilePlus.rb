@@ -59,6 +59,7 @@ profile_tab.appendCheckBox("use_base_profile","Build Upon Base Profile",false)
 profile_tab.appendComboBox("base_profile","Base Profile",profile_names)
 profile_tab.enabledOnlyWhenChecked("base_profile","use_base_profile")
 profile_tab.appendChoiceTable("custom_fields","Additional Fields",custom_field_choices)
+profile_tab.appendCheckBox("handle_excluded_items","Do not report on excluded items",true)
 
 load_file_tab = dialog.addTab("load_file_tab","Load Files")
 load_file_tab.appendCheckBox("export_csv","Export CSV",false)
@@ -212,6 +213,7 @@ if dialog.getDialogResult == true
 
 	CustomFieldBase.item_sets = values["item_sets"]
 	CustomFieldBase.prod_sets = values["production_sets"]
+	CustomFieldBase.handle_excluded_items = values["handle_excluded_items"]
 
 	base_profile = nil
 	if values["use_base_profile"]
@@ -222,10 +224,12 @@ if dialog.getDialogResult == true
 
 	#Allow custom fields to perform any initialization
 	values["custom_fields"].each do |custom_field|
+		puts "Performing setup: #{custom_field.name}"
 		custom_field.setup(items)
 	end	
 
 	values["custom_fields"].each do |custom_field|
+		puts "Attaching scripted field: #{custom_field.name}"
 		base_profile = custom_field.decorate(base_profile)
 	end
 

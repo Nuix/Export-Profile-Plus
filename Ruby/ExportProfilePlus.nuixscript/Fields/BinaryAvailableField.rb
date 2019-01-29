@@ -9,12 +9,18 @@ class BinaryAvailableField < CustomFieldBase
 
 	def decorate(profile)
 		return profile.addMetadata(self.name) do |item|
+			binary_data = nil
 			begin
 				binary_info = item.getBinary
-				binary_info.getBinaryData.getLength
+				binary_data = binary_info.getBinaryData
+				binary_data.getLength
 				next true
 			rescue Exception => exc
 				next false
+			ensure
+				if !binary_data.nil?
+					binary_data.close
+				end
 			end
 		end
 	end

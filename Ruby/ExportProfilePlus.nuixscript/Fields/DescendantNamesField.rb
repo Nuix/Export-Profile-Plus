@@ -13,7 +13,11 @@ class DescendantNamesField < CustomFieldBase
 	def decorate(profile)
 		return profile.addMetadata(self.name) do |item|
 			begin
-				next item.getDescendants.map{|i| i.getLocalisedName}.join("; ")
+				if CustomFieldBase.handle_excluded_items == true
+					next item.getDescendants.reject{|i|i.isExcluded}.map{|i| i.getLocalisedName}.join("; ")
+				else
+					next item.getDescendants.map{|i| i.getLocalisedName}.join("; ")
+				end
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end

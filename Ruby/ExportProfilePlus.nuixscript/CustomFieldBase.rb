@@ -16,6 +16,15 @@ class CustomFieldBase
 	def self.prod_sets=(value)
 		@@prod_sets = value
 	end
+
+	@@handle_excluded_items = true
+	def self.handle_excluded_items
+		return @@handle_excluded_items
+	end
+
+	def self.handle_excluded_items=(value)
+		@@handle_excluded_items = value
+	end
 	
 	def name
 		raise "Derived class must override this method and return a name"

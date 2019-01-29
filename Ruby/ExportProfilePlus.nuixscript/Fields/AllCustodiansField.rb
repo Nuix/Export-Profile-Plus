@@ -15,7 +15,11 @@ class AllCustodiansField < CustomFieldBase
 			begin
 				result = []
 				result << item.getCustodian
-				result += item.getDuplicates.map{|i|i.getCustodian}
+				if CustomFieldBase.handle_excluded_items == true
+					result += item.getDuplicates.reject{|i|i.isExcluded}.map{|i|i.getCustodian}
+				else
+					result += item.getDuplicates.map{|i|i.getCustodian}
+				end
 				result = result.reject{|c|c.nil? || c.strip.empty?}
 				result = result.uniq
 				result = result.sort

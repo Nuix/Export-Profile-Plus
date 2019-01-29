@@ -14,6 +14,9 @@ class ItemSetCustodians < CustomFieldBase
 				custodians[item.getCustodian] = true
 				CustomFieldBase.item_sets.each do |item_set|
 					dupes = item_set.findDuplicates(item)
+					if CustomFieldBase.handle_excluded_items == true
+						dupes = dupes.reject{|i|i.isExcluded}
+					end
 					dupes.each do |dupe_item|
 						custodians[dupe_item.getCustodian] = true
 					end

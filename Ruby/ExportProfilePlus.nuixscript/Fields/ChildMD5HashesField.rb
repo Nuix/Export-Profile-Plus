@@ -15,6 +15,9 @@ class ChildMD5HashesField < CustomFieldBase
 			begin
 				result = []
 				child_items = item.getChildren
+				if CustomFieldBase.handle_excluded_items == true
+					child_items = child_items.reject{|i|i.isExcluded}
+				end
 				child_items.each do |child_item|
 					hash = child_item.getDigests.getMd5
 					if !hash.nil? && !hash.strip.empty?
