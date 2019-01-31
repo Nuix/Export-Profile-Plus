@@ -2,7 +2,7 @@
 Export Profile Plus
 ===================
 
-![Last tested in Nuix 7.6](https://img.shields.io/badge/Nuix-7.6-green.svg)
+![This script was last tested in Nuix 7.6](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-7.6-green.svg)
 
 View the [GitHub project here](https://github.com/Nuix/Export-Profile-Plus) or [download the latest release here](https://github.com/Nuix/Export-Profile-Plus/releases).
 
