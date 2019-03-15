@@ -247,6 +247,10 @@ Exports a field with the SHA1 of an item's top level item (if it has one).
 
 Exports a field with the SHA256 of an item's top level item (if it has one).
 
+### Top Level DOCID
+
+Exports a field with the DOCID(s) of a given item's top level item.  If a given item is itself top level, this yields a blank value.  DOCID(s) returned by this field are based upon which production sets are selected in the settings dialog.  So if **N** production sets are selected, this field may contain 0-**N** DOCIDs, depending on how many of those production sets the given item's top level item is a member of.  When a given item resolves to multiple DOCIDs, the field's value will be delimited `; ` (semicolon space).  If the given item has no top level item, this field's value will be blank.
+
 ### Has Production Set
 
 For a given item, this field yields `true` or `false`.  `true` if the item is in at least one production set, otherwise `false`.
@@ -284,6 +288,14 @@ For a given item, lists a semicolon/space (`; `) delimited listing of the locali
 ### Material Descendant Names
 
 For a given item, lists a semicolon/space (`; `) delimited listing of the localised names of all audited (AKA material) descendants.
+
+### Descendant Count
+
+For a given item, yields the count of descendants a given item has.
+
+### Material Descendant Count
+
+For a given item, yields the count of descendants a given item has which are audited (AKA material).
 
 ### All Custodians
 
