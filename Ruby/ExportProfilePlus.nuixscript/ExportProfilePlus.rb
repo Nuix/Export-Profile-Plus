@@ -17,6 +17,10 @@ java_import "com.nuix.nx.dialogs.CommonDialogs"
 java_import "com.nuix.nx.dialogs.ProgressDialog"
 java_import "com.nuix.nx.controls.models.Choice"
 
+LookAndFeelHelper.setWindowsIfMetal
+NuixConnection.setUtilities($utilities)
+NuixConnection.setCurrentNuixVersion(NUIX_VERSION)
+
 load File.join(script_directory,"Xlsx.rb")
 load File.join(script_directory,"CustomFieldBase.rb")
 load File.join(script_directory,"DAT.rb")
@@ -32,9 +36,6 @@ require 'csv'
 #===================#
 # Initialize Dialog #
 #===================#
-LookAndFeelHelper.setWindowsIfMetal
-NuixConnection.setUtilities($utilities)
-NuixConnection.setCurrentNuixVersion(NUIX_VERSION)
 
 #Make sure some items are selected
 if $current_selected_items.nil? || $current_selected_items.size < 1
