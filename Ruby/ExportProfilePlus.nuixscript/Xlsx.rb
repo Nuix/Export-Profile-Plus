@@ -5,11 +5,13 @@ if !Object.const_defined?("NuixVersion")
 
 		attr_accessor :major
 		attr_accessor :minor
+		attr_accessor :bugfix
 		attr_accessor :build
 
-		def initialize(major,minor=0,build=0)
+		def initialize(major,minor=0,bugfix=0,build=0)
 			@major = major
 			@minor = minor
+			@bugfix = bugfix
 			@build = build
 		end
 
@@ -24,7 +26,7 @@ if !Object.const_defined?("NuixVersion")
 		end
 
 		def to_s
-		  return [@major,@minor,@build].join(".")
+		  return [@major,@minor,@bugfix,@build].join(".")
 		end
 
 		def <=>(other)
@@ -35,7 +37,7 @@ if !Object.const_defined?("NuixVersion")
 				other = NuixVersion.parse(other.to_s)
 			end
 
-			return [@major,@minor,@build] <=> [other.major,other.minor,other.build]
+			return [@major,@minor,@bugfix,@build] <=> [other.major,other.minor,other.bugfix,other.build]
 		end
 	end
 end
