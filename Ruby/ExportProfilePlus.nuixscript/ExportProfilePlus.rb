@@ -99,9 +99,13 @@ scm_tab.enabledOnlyWhenChecked("scm_field_name","single_custom_metadata")
 scm_tab.enabledOnlyWhenChecked("scm_include_names","single_custom_metadata")
 scm_tab.enabledOnlyWhenChecked("scm_skip_empty","single_custom_metadata")
 
+all_item_sets = $current_case.getAllItemSets
+# ItemSet.findDuplicates errors for item sets created with a scripted expression
+non_scripted_item_sets = all_item_sets.reject{|set| set.getSettings["deduplication"] == "SCRIPTED"}
+item_set_choices = non_scripted_item_sets.map{|set|Choice.new(set,set.getName)}
+
 item_sets_tab = dialog.addTab("item_sets_tab","Item Sets")
 item_sets_tab.appendHeader("This tab allows you to define items sets used in scripted fields which require a selected item set.")
-item_set_choices = $current_case.getAllItemSets.map{|set|Choice.new(set,set.getName)}
 item_sets_tab.appendChoiceTable("item_sets","Item Sets",item_set_choices)
 
 prod_sets_tab = dialog.addTab("prod_sets_tab","Production Sets")
@@ -202,6 +206,10 @@ dialog.validateBeforeClosing do |values|
 	next true
 end
 
+def ensure_file_directory(file_path)
+	java.io.File.new(file_path).getParentFile.mkdirs
+end
+
 #============================#
 # Display Dialog and Do Work #
 #============================#
@@ -223,20 +231,20 @@ if dialog.getDialogResult == true
 		base_profile = $utilities.getMetadataProfileStore.createMetadataProfile
 	end
 
-	#Allow custom fields to perform any initialization
-	values["custom_fields"].each do |custom_field|
-		puts "Performing setup: #{custom_field.name}"
-		custom_field.setup(items)
-	end	
-
-	values["custom_fields"].each do |custom_field|
-		puts "Attaching scripted field: #{custom_field.name}"
-		base_profile = custom_field.decorate(base_profile)
-	end
-
-	export_fields = base_profile.getMetadata
-
 	ProgressDialog.forBlock do |pd|
+		#Allow custom fields to perform any initialization
+		values["custom_fields"].each do |custom_field|
+			pd.logMessage("Performing setup: #{custom_field.name}")
+			custom_field.setup(items)
+		end	
+
+		values["custom_fields"].each do |custom_field|
+			pd.logMessage("Attaching scripted field: #{custom_field.name}")
+			base_profile = custom_field.decorate(base_profile)
+		end
+
+		export_fields = base_profile.getMetadata
+
 		pd.logMessage("Selected Items: #{items.size}")
 		if values["use_base_profile"]
 			pd.logMessage("Base Profile: #{values["base_profile"]}")
@@ -287,6 +295,10 @@ if dialog.getDialogResult == true
 		end
 
 		# Open writers for the various formats we're exporting to
+		ensure_file_directory(values["html_file"]) if export_html
+		ensure_file_directory(values["csv_file"]) if export_csv
+		ensure_file_directory(values["dat_file"]) if export_dat
+
 		html = File.open(values["html_file"],"w:utf-8") if export_html
 		csv = CSV.open(values["csv_file"],"w:utf-8") if export_csv
 		dat = DAT.create(values["dat_file"]) if export_dat
@@ -381,7 +393,7 @@ if dialog.getDialogResult == true
 			end
 
 			# Write values to the various formats we may be exporting to
-			csv << record_values if export_csv
+			csv << record_values.map{|v|v.gsub(/[\r\n]/," ")} if export_csv
 			dat << record_values if export_dat
 			if export_xlsx
 				sheet << record_values.map do |v|
