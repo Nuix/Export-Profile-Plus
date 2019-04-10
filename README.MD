@@ -2,7 +2,7 @@
 Export Profile Plus
 ===================
 
-![This script was last tested in Nuix 7.6](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-7.6-green.svg)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) ![This script was last tested in Nuix 7.8](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-7.8-green.svg)
 
 View the [GitHub project here](https://github.com/Nuix/Export-Profile-Plus) or [download the latest release here](https://github.com/Nuix/Export-Profile-Plus/releases).
 
@@ -72,7 +72,7 @@ and with field names the value would be
 
 ### Item Sets Tab
 
-On this tab you may specify one or more item sets which will be used by scripted fields which perform their calculation based on selected item sets.
+On this tab you may specify one or more item sets which will be used by scripted fields which perform their calculation based on selected item sets.  Note that item sets created using a scripted expression will not be listed.  This is because calls to [ItemSet.findDuplicates](https://download.nuix.com/releases/desktop/stable/docs/en/scripting/api/nuix/ItemSet.html#findDuplicates-nuix.Item-) will throw errors when the given item set was created using a scripted expression.
 
 ## Scripted Additional Fields
 
