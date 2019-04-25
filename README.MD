@@ -35,6 +35,11 @@ On this tab you configure what fields are used.
 - **Base Profile**: This is the metadata profile which will be used as the basis for the export/annotation operation being performed.
 - **Additional Fields**: This is where you may specify any additional fields the script is able to calculate which will be included with the base profile for the export/annotation operation being performed.  See [Additional Fields](#additional-fields) below for more details.
 
+Additionally there are settings:
+
+- **Do not report on excluded items**: Removes excluded items from reporting, including instances where a given field's calculation may pull them in.
+- **Multi-value Field Delimiter**: The delimiter used when a given single field may contain delimited values.  The default is `; ` (semicolon space).
+
 ### Load Files Tab
 
 On this tab you are able to specify one or more output file formats.
@@ -142,13 +147,13 @@ Internally this works by calling [Item.getTextObject] which returns a [Text] obj
 
 ### Digest Lists
 
-This field reports a semicolon delimited list of digest lists that a given item's MD5 is a member of.
+This field reports a delimited list of digest lists that a given item's MD5 is a member of.
 
 Internally this accomplished by searching upfront for all the items in each digest list.  Then when calculating the value for a given item, the item is intersected (using a call to [ItemUtility.intersection]) against each digest list's reference set of items to see if the item is present in the given digest list.
 
 ### Irregular Category
 
-This field will contain a semicolon delimited list of all the irregular items categories a given item is a member of.
+This field will contain a delimited list of all the irregular items categories a given item is a member of.
 
 Internally this accomplished by searching upfront for all the items in each irregular category.  Then when calculating the value for a given item, the item is intersected (using a call to [ItemUtility.intersection]) against each category's reference set of items to see if the item is present in the given category.
 
@@ -202,7 +207,7 @@ This field will contain the content text of all items in the same family as the 
 
 ### Property Names
 
-This field will yield a value containing a semicolon delimited list of all the property names for a given item.
+This field will yield a value containing a delimited list of all the property names for a given item.
 
 ### Duplicate Path Directories
 
@@ -249,7 +254,7 @@ Exports a field with the SHA256 of an item's top level item (if it has one).
 
 ### Top Level DOCID
 
-Exports a field with the DOCID(s) of a given item's top level item.  If a given item is itself top level, this yields a blank value.  DOCID(s) returned by this field are based upon which production sets are selected in the settings dialog.  So if **N** production sets are selected, this field may contain 0-**N** DOCIDs, depending on how many of those production sets the given item's top level item is a member of.  When a given item resolves to multiple DOCIDs, the field's value will be delimited `; ` (semicolon space).  If the given item has no top level item, this field's value will be blank.
+Exports a field with the DOCID(s) of a given item's top level item.  If a given item is itself top level, this yields a blank value.  DOCID(s) returned by this field are based upon which production sets are selected in the settings dialog.  So if **N** production sets are selected, this field may contain 0-**N** DOCIDs, depending on how many of those production sets the given item's top level item is a member of.  When a given item resolves to multiple DOCIDs, the value will contain a delimited list of DOCIDs.  If the given item has no top level item, this field's value will be blank.
 
 ### Has Production Set
 
@@ -257,15 +262,15 @@ For a given item, this field yields `true` or `false`.  `true` if the item is in
 
 ### Production Set Names
 
-For a given item, this field yields a semicolon/space (`; `) delimited list of production set names for all production sets in which this item is a member.
+For a given item, this field yields a delimited list of production set names for all production sets in which this item is a member.
 
 ### Production Set GUIDs
 
-For a given item, this field yields a semicolon/space (`; `) delimited list of production set GUIDs (the GUID of the production set itself) for all production sets in which this item is a member.
+For a given item, this field yields a delimited list of production set GUIDs (the GUID of the production set itself) for all production sets in which this item is a member.
 
 ### Production Set History
 
-For a given item, lists a semicolon/space (`; `) delimited listing of when the given item was added or removed from a production set based on events present in the case history.  Example output:
+For a given item, lists a delimited list of when the given item was added or removed from a production set based on events present in the case history.  Example output:
 
 ```
 Added to 'Prod 1' 2017-08-25T20:59:03.855Z; Added to 'Prod 3' 2017-08-25T21:59:00.825Z; Removed from 'Prod 1' 2017-08-25T22:03:50.055Z
@@ -275,19 +280,19 @@ Added to 'Prod 1' 2017-08-25T20:59:03.855Z; Added to 'Prod 3' 2017-08-25T21:59:0
 
 ### All Production Set DOCIDs
 
-For a given item, this field yields a semicolon/space (`; `) delimited list of DOCIDs for every production set this item is a member of.
+For a given item, this field yields a delimited list of DOCIDs for every production set this item is a member of.
 
 ### Select Production Set DOCIDs
 
-For a given item, this field yields a semicolon/space (`; `) delimited list of DOCIDs for specifically selected production set this item is a member of.  To determine which production sets are reported, select the relevant production sets in the production sets tab of the settings dialog.
+For a given item, this field yields a delimited list of DOCIDs for specifically selected production set this item is a member of.  To determine which production sets are reported, select the relevant production sets in the production sets tab of the settings dialog.
 
 ### Descendant Names
 
-For a given item, lists a semicolon/space (`; `) delimited listing of the localised names of all descendants.
+For a given item, lists a delimited listing of the localised names of all descendants.
 
 ### Material Descendant Names
 
-For a given item, lists a semicolon/space (`; `) delimited listing of the localised names of all audited (AKA material) descendants.
+For a given item, lists a delimited listing of the localised names of all audited (AKA material) descendants.
 
 ### Descendant Count
 
@@ -299,11 +304,11 @@ For a given item, yields the count of descendants a given item has which are aud
 
 ### All Custodians
 
-Yields a semicolon delimited list of all custodians which have an MD5 duplicate of the given item.
+Yields a delimited list of all custodians which have an MD5 duplicate of the given item.
 
 ### Top Level All Custodians
 
-Yields a semicolon delimited list of all custodians which have a top level MD5 duplicate of the given item, if the item is itself top level
+Yields a delimited list of all custodians which have a top level MD5 duplicate of the given item, if the item is itself top level
 
 ### Family Count
 
@@ -312,6 +317,24 @@ Yields the number of items in the family this item belongs to.
 ### Material Family Count
 
 Yields the number of items in the family this item belongs to that are material/audited.
+
+### Office Exceptions
+
+Yields a delimited list of details relating to office document items based on metadata properties of those items.  Possible values that may show up in this field:
+
+- `Contains Comments`
+- `Contains Hidden Slides`
+- `Contains Hidden Text`
+- `Contains White Text`
+- `Excel Hidden Columns`
+- `Excel Hidden Rows`
+- `Excel Hidden Sheets`
+- `Excel Hidden Workbook`
+- `Excel Protected Sheets`
+- `Excel Very Hidden Sheets`
+- `Excel Workbook Write Protected`
+- `Excel Print Areas`
+- `Track Changes`
 
 ### Physical File Ancestor Name
 
@@ -323,15 +346,15 @@ Yields the MD5 digest of the physical file ancestor item, as would be found by t
 
 ### Child MD5 Hashes
 
-Yields a semicolon delimited list containing the MD5 hash of all child items of a given item.
+Yields a delimited list containing the MD5 hash of all child items of a given item.
 
 ### Child SHA1 Hashes
 
-Yields a semicolon delimited list containing the SHA1 hash of all child items of a given item.
+Yields a delimited list containing the SHA1 hash of all child items of a given item.
 
 ### Child SHA256 Hashes
 
-Yields a semicolon delimited list containing the SHA256 hash of all child items of a given item.
+Yields a delimited list containing the SHA256 hash of all child items of a given item.
 
 ## Implementing New Fields
 

@@ -61,6 +61,7 @@ profile_tab.appendComboBox("base_profile","Base Profile",profile_names)
 profile_tab.enabledOnlyWhenChecked("base_profile","use_base_profile")
 profile_tab.appendChoiceTable("custom_fields","Additional Fields",custom_field_choices)
 profile_tab.appendCheckBox("handle_excluded_items","Do not report on excluded items",true)
+profile_tab.appendTextField("multi_value_delimiter","Multi-value Field Delimiter","; ")
 
 load_file_tab = dialog.addTab("load_file_tab","Load Files")
 load_file_tab.appendCheckBox("export_csv","Export CSV",false)
@@ -223,6 +224,7 @@ if dialog.getDialogResult == true
 	CustomFieldBase.item_sets = values["item_sets"]
 	CustomFieldBase.prod_sets = values["production_sets"]
 	CustomFieldBase.handle_excluded_items = values["handle_excluded_items"]
+	CustomFieldBase.delimiter = values["multi_value_delimiter"]
 
 	base_profile = nil
 	if values["use_base_profile"]

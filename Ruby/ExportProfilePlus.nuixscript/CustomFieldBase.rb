@@ -25,6 +25,15 @@ class CustomFieldBase
 	def self.handle_excluded_items=(value)
 		@@handle_excluded_items = value
 	end
+
+	@@delimiter = "; "
+	def self.delimiter
+		return @@delimiter
+	end
+
+	def self.delimiter=(value)
+		@@delimiter = value
+	end
 	
 	def name
 		raise "Derived class must override this method and return a name"

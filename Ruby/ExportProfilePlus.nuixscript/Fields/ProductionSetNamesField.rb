@@ -4,13 +4,13 @@ class ProductionSetNamesField < CustomFieldBase
 	end
 
 	def tool_tip
-		return "Returns a list production set names for all production sets a given item is a member of."
+		return "Returns a delimited list of production set names for all production sets a given item is a member of."
 	end
 
 	def decorate(profile)
 		return profile.addMetadata(self.name) do |item|
 			begin
-				next @production_set_lookup[item].map{|ps| ps.getName}.join("; ")
+				next @production_set_lookup[item].map{|ps| ps.getName}.join(CustomFieldBase.delimiter)
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end

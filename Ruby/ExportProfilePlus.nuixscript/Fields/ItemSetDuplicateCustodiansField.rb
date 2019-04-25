@@ -4,7 +4,7 @@ class ItemSetDuplicateCustodians < CustomFieldBase
 	end
 
 	def tool_tip
-		return "List of custodians which have a duplicate of a given item in select item sets"
+		return "Delimited list of custodians which have a duplicate of a given item in select item sets"
 	end
 
 	def decorate(profile)
@@ -20,7 +20,7 @@ class ItemSetDuplicateCustodians < CustomFieldBase
 						custodians[dupe_item.getCustodian] = true
 					end
 				end
-				next custodians.keys.reject{|c|c.nil? || c.strip.empty?}.sort.join("; ")
+				next custodians.keys.reject{|c|c.nil? || c.strip.empty?}.sort.join(CustomFieldBase.delimiter)
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end

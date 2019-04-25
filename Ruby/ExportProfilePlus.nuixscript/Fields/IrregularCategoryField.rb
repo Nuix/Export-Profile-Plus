@@ -4,7 +4,7 @@ class IrregularCategoryField < CustomFieldBase
 	end
 
 	def tool_tip
-		return "Returns a list of irregular categories the given item belongs to"
+		return "Returns a delimited list of irregular categories the given item belongs to"
 	end
 
 	def decorate(profile)
@@ -17,7 +17,7 @@ class IrregularCategoryField < CustomFieldBase
 						result << name
 					end
 				end
-				next result.sort.join("; ")
+				next result.sort.join(CustomFieldBase.delimiter)
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end

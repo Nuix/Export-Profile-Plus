@@ -8,7 +8,7 @@ class AllDomainsField < CustomFieldBase
 	end
 
 	def tool_tip
-		return "Exports a list of all email domains when available"
+		return "Exports a delimited list of all email domains when available"
 	end
 
 	def decorate(profile)
@@ -25,7 +25,7 @@ class AllDomainsField < CustomFieldBase
 						end
 					end
 					
-					next domains.keys.sort.join("; ")
+					next domains.keys.sort.join(CustomFieldBase.delimiter)
 				else
 					next ""
 				end

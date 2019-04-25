@@ -7,7 +7,7 @@ class AllCustodiansField < CustomFieldBase
 	end
 
 	def tool_tip
-		return "Yields a semicolon delimited list of all custodians which have an MD5 duplicate of the given item"
+		return "Yields a delimited list of all custodians which have an MD5 duplicate of the given item"
 	end
 
 	def decorate(profile)
@@ -23,7 +23,7 @@ class AllCustodiansField < CustomFieldBase
 				result = result.reject{|c|c.nil? || c.strip.empty?}
 				result = result.uniq
 				result = result.sort
-				next result.join("; ")
+				next result.join(CustomFieldBase.delimiter)
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end

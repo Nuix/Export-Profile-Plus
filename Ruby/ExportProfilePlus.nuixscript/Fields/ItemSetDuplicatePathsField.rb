@@ -6,7 +6,7 @@ class ItemSetDuplicatePaths < CustomFieldBase
 	#You may override this in derived class to provide a tool tip
 	#for the given custom field
 	def tool_tip
-		return "List of paths for items which are a duplicate of a given item in select item sets"
+		return "Delimited list of paths for items which are a duplicate of a given item in select item sets"
 	end
 
 	def decorate(profile)
@@ -23,7 +23,7 @@ class ItemSetDuplicatePaths < CustomFieldBase
 						paths << path_string
 					end
 				end
-				next paths.sort.join("; ")
+				next paths.sort.join(CustomFieldBase.delimiter)
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end

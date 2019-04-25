@@ -21,7 +21,7 @@ class DuplicatePathDirectoriesField < CustomFieldBase
 						next parent_file.getPath
 					end
 				end
-				next dupe_paths.uniq.sort.join("; ")
+				next dupe_paths.uniq.sort.join(CustomFieldBase.delimiter)
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end

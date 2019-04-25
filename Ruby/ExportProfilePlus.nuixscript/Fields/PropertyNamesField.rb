@@ -4,13 +4,13 @@ class PropertyNamesField < CustomFieldBase
 	end
 
 	def tool_tip
-		return "Exports a field with list of property names present on each item"
+		return "Exports a field with a delimited list of property names present on each item"
 	end
 
 	def decorate(profile)
 		return profile.addMetadata(self.name) do |item|
 			begin
-				property_names = item.getProperties.keys.sort.join("; ")
+				property_names = item.getProperties.keys.sort.join(CustomFieldBase.delimiter)
 				next property_names
 			rescue Exception => exc
 				next "Error: #{exc.message}"

@@ -7,7 +7,7 @@ class ChildSHA1HashesField < CustomFieldBase
 	end
 
 	def tool_tip
-		return "Yields a semicolon delimited list containing the SHA1 hash of all child items of a given item"
+		return "Yields a delimited list containing the SHA1 hash of all child items of a given item"
 	end
 
 	def decorate(profile)
@@ -24,7 +24,7 @@ class ChildSHA1HashesField < CustomFieldBase
 						result << hash
 					end
 				end
-				next result.join("; ")
+				next result.join(CustomFieldBase.delimiter)
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end

@@ -7,7 +7,7 @@ class MaterialDescendantNamesField < CustomFieldBase
 	end
 
 	def tool_tip
-		return "Yields a semicolon delimited list containing the name of all audited descendants of a given item"
+		return "Yields a delimited list containing the name of all audited descendants of a given item"
 	end
 
 	def decorate(profile)
@@ -15,9 +15,9 @@ class MaterialDescendantNamesField < CustomFieldBase
 			begin
 				audited_items = item.getDescendants.select{|i| i.isAudited}
 				if CustomFieldBase.handle_excluded_items == true
-					next audited_items.reject{|i|i.isExcluded}.map{|i| i.getLocalisedName}.join("; ")
+					next audited_items.reject{|i|i.isExcluded}.map{|i| i.getLocalisedName}.join(CustomFieldBase.delimiter)
 				else
-					next audited_items.map{|i| i.getLocalisedName}.join("; ")
+					next audited_items.map{|i| i.getLocalisedName}.join(CustomFieldBase.delimiter)
 				end
 			rescue Exception => exc
 				next "Error: #{exc.message}"

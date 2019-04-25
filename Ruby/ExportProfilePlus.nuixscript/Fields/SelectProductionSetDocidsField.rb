@@ -4,7 +4,7 @@ class SelectProductionSetDocidsField < CustomFieldBase
 	end
 
 	def tool_tip
-		return "Returns a list DOCIDs for specific selected production sets a given item is a member of."
+		return "Returns a delimited list DOCIDs for specific selected production sets a given item is a member of."
 	end
 
 	def docids_for_item(item)
@@ -30,7 +30,7 @@ class SelectProductionSetDocidsField < CustomFieldBase
 		# we return a delimited list of DOCIDs.  If none were resolved, then
 		# we return a blank value.
 		if result.size > 0
-			return result.join("; ")
+			return result.join(CustomFieldBase.delimiter)
 		else
 			return ""
 		end

@@ -4,7 +4,7 @@ class DigestListsField < CustomFieldBase
 	end
 
 	def tool_tip
-		return "Returns a list of digest lists a given item shares its MD5 with"
+		return "Returns a delimited list of digest lists a given item shares its MD5 with"
 	end
 
 	def decorate(profile)
@@ -20,7 +20,7 @@ class DigestListsField < CustomFieldBase
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end
-			next result.sort.join("; ")
+			next result.sort.join(CustomFieldBase.delimiter)
 		end
 	end
 

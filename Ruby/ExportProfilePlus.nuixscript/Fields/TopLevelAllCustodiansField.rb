@@ -7,7 +7,7 @@ class TopLevelAllCustodiansField < CustomFieldBase
 	end
 
 	def tool_tip
-		return "Yields a semicolon delimited list of all custodians which have a top level MD5 duplicate of the given item, if the item is itself top level"
+		return "Yields a delimited list of all custodians which have a top level MD5 duplicate of the given item, if the item is itself top level"
 	end
 
 	def decorate(profile)
@@ -27,7 +27,7 @@ class TopLevelAllCustodiansField < CustomFieldBase
 				result = result.reject{|c|c.nil? || c.strip.empty?}
 				result = result.uniq
 				result = result.sort
-				next result.join("; ")
+				next result.join(CustomFieldBase.delimiter)
 			rescue Exception => exc
 				next "Error: #{exc.message}"
 			end
