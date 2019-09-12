@@ -24,6 +24,7 @@ NuixConnection.setCurrentNuixVersion(NUIX_VERSION)
 load File.join(script_directory,"Xlsx.rb")
 load File.join(script_directory,"CustomFieldBase.rb")
 load File.join(script_directory,"DAT.rb")
+load File.join(script_directory,"TSV.rb")
 
 # Load field class files
 fields_directory = File.join(script_directory,"Fields")
@@ -71,6 +72,10 @@ load_file_tab.enabledOnlyWhenChecked("csv_file","export_csv")
 load_file_tab.appendCheckBox("export_dat","Export DAT",false)
 load_file_tab.appendSaveFileChooser("dat_file","DAT File","DAT File","dat")
 load_file_tab.enabledOnlyWhenChecked("dat_file","export_dat")
+
+load_file_tab.appendCheckBox("export_tsv","Export TSV",false)
+load_file_tab.appendSaveFileChooser("tsv_file","TSV File","TSV File","tsv")
+load_file_tab.enabledOnlyWhenChecked("tsv_file","export_tsv")
 
 load_file_tab.appendCheckBox("export_xlsx","Export XLSX",false)
 load_file_tab.appendSaveFileChooser("xlsx_file","XLSX File","XLSX File","xlsx")
@@ -125,6 +130,12 @@ dialog.validateBeforeClosing do |values|
 	# Make sure that if were exporting DAT that file path was provided
 	if values["export_dat"] && values["dat_file"].empty?
 		CommonDialogs.showWarning("Please provide a valid value for DAT File.")
+		next false
+	end
+
+	# Make sure that if were exporting TSV that file path was provided
+	if values["export_tsv"] && values["tsv_file"].empty?
+		CommonDialogs.showWarning("Please provide a valid value for TSV File.")
 		next false
 	end
 
@@ -217,6 +228,7 @@ end
 dialog.display
 if dialog.getDialogResult == true
 	puts "Beginning export..."
+	start_time = Time.now
 
 	items = $current_selected_items
 	values = dialog.toMap
@@ -257,6 +269,7 @@ if dialog.getDialogResult == true
 		end
 		pd.logMessage("CSV File: #{values["csv_file"]}") if values["export_csv"]
 		pd.logMessage("DAT File: #{values["dat_file"]}") if values["export_dat"]
+		pd.logMessage("TSV File: #{values["tsv_file"]}") if values["export_tsv"]
 		pd.logMessage("XLSX File: #{values["xlsx_file"]}") if values["export_xlsx"]
 
 		pd.setTitle("Export Profile Plus")
@@ -269,6 +282,7 @@ if dialog.getDialogResult == true
 		# various formats we might be exporting
 		csv = nil
 		dat = nil
+		tsv = nil
 		xlsx = nil
 		sheet = nil
 		custom = nil
@@ -279,6 +293,7 @@ if dialog.getDialogResult == true
 		# Extract settings dialog values into convenient variables
 		export_csv = values["export_csv"]
 		export_dat = values["export_dat"]
+		export_tsv = values["export_tsv"]
 		export_xlsx = values["export_xlsx"]
 		export_html = values["export_html"]
 		export_custom = values["export_custom"]
@@ -300,10 +315,12 @@ if dialog.getDialogResult == true
 		ensure_file_directory(values["html_file"]) if export_html
 		ensure_file_directory(values["csv_file"]) if export_csv
 		ensure_file_directory(values["dat_file"]) if export_dat
+		ensure_file_directory(values["tsv_file"]) if export_tsv
 
 		html = File.open(values["html_file"],"w:utf-8") if export_html
 		csv = CSV.open(values["csv_file"],"w:utf-8") if export_csv
 		dat = DAT.create(values["dat_file"]) if export_dat
+		tsv = TSV.create(values["tsv_file"]) if export_tsv
 		if export_xlsx
 			xlsx = Xlsx.new
 			sheet = xlsx.get_sheet("Export")
@@ -314,6 +331,7 @@ if dialog.getDialogResult == true
 		headers = export_fields.map{|f|f.getName}
 		csv << headers if export_csv
 		dat << headers if export_dat
+		tsv << headers if export_tsv
 		sheet << headers if export_xlsx
 		if export_custom
 			custom_file.puts(headers.map{|v|"#{custom_quote}#{v}#{custom_quote}"}.join(custom_delimiter))
@@ -397,6 +415,7 @@ if dialog.getDialogResult == true
 			# Write values to the various formats we may be exporting to
 			csv << record_values.map{|v|v.gsub(/[\r\n]/," ")} if export_csv
 			dat << record_values if export_dat
+			tsv << record_values if export_tsv
 			if export_xlsx
 				sheet << record_values.map do |v|
 					if v.is_a?(String) && v.size > 32000
@@ -444,6 +463,7 @@ if dialog.getDialogResult == true
 		# Close out all the file formats we have been writing to
 		csv.close if !csv.nil?
 		dat.close if !dat.nil?
+		tsv.close if !tsv.nil?
 		if !xlsx.nil?
 			xlsx.save(values["xlsx_file"])
 		end
@@ -465,6 +485,9 @@ if dialog.getDialogResult == true
 	values["custom_fields"].each do |custom_field|
 		custom_field.cleanup
 	end
+
+	finish_time = Time.now
+	puts "Completed in #{finish_time - start_time} seconds"
 
 	# If we closed all the workbench tabs, we should also open a new one
 	# back up for the user now that were done

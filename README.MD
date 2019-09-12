@@ -47,7 +47,9 @@ On this tab you are able to specify one or more output file formats.
 - **Export CSV**: Whether you would like to export a CSV
 	- **CSV File**: The location to which you would like to export the CSV file.
 - **Export DAT**: Whether you would like to export a DAT file
-	- **DAT File**: The location to which you would like to export the CSV file.
+	- **DAT File**: The location to which you would like to export the DAT file.
+- **Export TSV**: Whether you would like to export a TSV file
+	- **TSV File**: The location to which you would like to export the TSV file.
 - **Export XLSX**: Whether you would like to export an Excel XLSX file
 	- **XLSX File**: The location to which you would like to export the XLSX file.
 - **Export custom format**: Whether to export a customized delimited file format.
@@ -355,6 +357,14 @@ Yields a delimited list containing the SHA1 hash of all child items of a given i
 ### Child SHA256 Hashes
 
 Yields a delimited list containing the SHA256 hash of all child items of a given item.
+
+### Duplicate Custodians and Paths
+
+Yields a delimited list of custodian and path of each duplicate of a given item.
+
+### Item Set Paths
+
+Yields a delimited list of paths for items which are a duplicate of a given item in select item sets, includes path of given item as well.
 
 ## Implementing New Fields
 
