@@ -28,7 +28,7 @@ class IrregularCategoryField < CustomFieldBase
 		@irregular_categories = {
 			"Corrupted Container" => "properties:FailureDetail AND encrypted:0 AND has-text:0 AND ( has-embedded-data:1 OR kind:container OR kind:database )",
 			"Unsupported Container" => "kind:( container OR database ) AND encrypted:0 AND has-embedded-data:0 AND NOT flag:partially_processed AND NOT flag:not_processed AND NOT properties:FailureDetail",
-			"Non-searchable PDFs" => "mime-type:application/pdf AND contains-text:0",
+			"Non-searchable PDFs" => "mime-type:application/pdf AND NOT content:*",
 			"Text Updated" => "previous-version-docid:*",
 			"Bad Extension" => "flag:irregular_file_extension",
 			"Unrecognised" => "kind:unrecognised",
