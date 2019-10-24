@@ -57,6 +57,12 @@ class IrregularCategoryField < CustomFieldBase
 			"Digest Mismatch" => "flag:digest_mismatch"
 		}
 
+		if NuixConnection.getCurrentNuixVersion.isLessThan("7.0")
+			@irregular_categories["Deleted"] = "deleted:1"
+			@irregular_categories["Text Updated"] = "previous-version-docid:*"
+			@irregular_categories["Non-searchable PDFs"] = "mime-type:application/pdf AND contains-text:0"
+		end
+
 		@irregular_reference_items = {}
 		@irregular_categories.each do |name,query|
 			@irregular_reference_items[name] = $current_case.searchUnsorted(query)
