@@ -146,6 +146,12 @@ dialog.validateBeforeClosing do |values|
 		next false
 	end
 
+	# Make sure that if were exporting HTML that file path was provided
+	if values["export_html"] && values["html_file"].empty?
+		CommonDialogs.showWarning("Please provide a valid value for HTML File.")
+		next false
+	end
+
 	# Make sure that if were exporting XLSX that file path was provided
 	if values["export_xlsx"] && values["xlsx_file"].empty?
 		CommonDialogs.showWarning("Please provide a valid value for XLSX File.")
@@ -312,6 +318,11 @@ if dialog.getDialogResult == true
 		scm_skip_empty = values["scm_skip_empty"]
 		single_custom_metadata = values["single_custom_metadata"]
 		apply_custom_metadata = values["apply_custom_metadata"]
+
+		# If user has enabled record overflow, check if the number of items we are exporting
+		# exceeds the maximum.  We will then change how we name the exported files to account for this.
+		will_need_overflow = false
+
 
 		# If were applying custom metadata its a good idea we close all workbench
 		# tabs first, may improve performance and reduce potential errors
