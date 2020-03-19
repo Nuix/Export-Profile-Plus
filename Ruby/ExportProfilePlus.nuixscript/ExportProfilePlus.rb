@@ -26,6 +26,7 @@ load File.join(script_directory,"CustomFieldBase.rb")
 load File.join(script_directory,"DAT.rb")
 load File.join(script_directory,"TSV.rb")
 load File.join(script_directory,"HTML.rb")
+load File.join(script_directory,"FilenameSuffixer.rb")
 
 # Load field class files
 fields_directory = File.join(script_directory,"Fields")
@@ -318,11 +319,29 @@ if dialog.getDialogResult == true
 		scm_skip_empty = values["scm_skip_empty"]
 		single_custom_metadata = values["single_custom_metadata"]
 		apply_custom_metadata = values["apply_custom_metadata"]
+		overflow_records = values["overflow_records"]
+		maximum_records = values["maximum_records"]
+
+		html_file = values["html_file"]
+		csv_file = values["csv_file"]
+		dat_file = values["dat_file"]
+		tsv_file = values["tsv_file"]
+		xlsx_file = values["xlsx_file"]
+		custom_file_name = values["custom_file"]
 
 		# If user has enabled record overflow, check if the number of items we are exporting
 		# exceeds the maximum.  We will then change how we name the exported files to account for this.
-		will_need_overflow = false
+		will_need_overflow = (overflow_records && items.size > maximum_records)
 
+		# Used to suffix file/sheet names for record overflow
+		overflow_index = 1
+
+		# Zero file width for overflow naming
+		# Ex 2: File_01, File_02 / Sheet 01, Sheet 02
+		overflow_naming_width = 2
+
+		# How many records written to current files
+		current_record_count = 0
 
 		# If were applying custom metadata its a good idea we close all workbench
 		# tabs first, may improve performance and reduce potential errors
@@ -331,20 +350,25 @@ if dialog.getDialogResult == true
 		end
 
 		# Open writers for the various formats we're exporting to
-		ensure_file_directory(values["html_file"]) if export_html
-		ensure_file_directory(values["csv_file"]) if export_csv
-		ensure_file_directory(values["dat_file"]) if export_dat
-		ensure_file_directory(values["tsv_file"]) if export_tsv
+		ensure_file_directory(html_file) if export_html
+		ensure_file_directory(csv_file) if export_csv
+		ensure_file_directory(dat_file) if export_dat
+		ensure_file_directory(tsv_file) if export_tsv
 
-		html = HTML.create(values["html_file"]) if export_html
-		csv = CSV.open(values["csv_file"],"w:utf-8") if export_csv
-		dat = DAT.create(values["dat_file"]) if export_dat
-		tsv = TSV.create(values["tsv_file"]) if export_tsv
+		# Create all the formats we will be exporting to
+		html = HTML.create(html_file) if export_html
+		csv = CSV.open(csv_file,"w:utf-8") if export_csv
+		dat = DAT.create(dat_file) if export_dat
+		tsv = TSV.create(tsv_file) if export_tsv
 		if export_xlsx
 			xlsx = Xlsx.new
-			sheet = xlsx.get_sheet("Export")
+			if will_need_overflow
+				sheet = xlsx.get_sheet("Export #{overflow_index.to_s.rjust(overflow_naming_width,"0")}")
+			else
+				sheet = xlsx.get_sheet("Export")
+			end
 		end
-		custom_file = File.open(values["custom_file"],"w:utf-8") if export_custom
+		custom_file = File.open(custom_file_name,"w:utf-8") if export_custom
 
 		# Get headers and write to all formats we're exporting to
 		headers = export_fields.map{|f|f.getName}
@@ -415,6 +439,45 @@ if dialog.getDialogResult == true
 				end
 			end
 
+			# Are we overflowing and have we exceeded maximum records for current files/sheet?
+			# If so we need to close everything out and start fresh
+			if overflow_records && current_record_count >= maximum_records
+				
+				overflow_index += 1
+
+				# Steps to close things out
+				csv.close if !csv.nil?
+				dat.close if !dat.nil?
+				tsv.close if !tsv.nil?
+				html.close if !html.nil?
+				if !xlsx.nil?
+					xlsx.save(values["xlsx_file"])
+				end
+				custom_file.close if !custom_file.nil?
+
+				# Steps to start new files/sheet
+				html = HTML.create(FilenameSuffixer.add_suffix(html_file,overflow_index,overflow_naming_width)) if export_html
+				csv = CSV.open(FilenameSuffixer.add_suffix(csv_file,overflow_index,overflow_naming_width),"w:utf-8") if export_csv
+				dat = DAT.create(FilenameSuffixer.add_suffix(dat_file,overflow_index,overflow_naming_width)) if export_dat
+				tsv = TSV.create(FilenameSuffixer.add_suffix(tsv_file,overflow_index,overflow_naming_width)) if export_tsv
+				if export_xlsx
+					sheet = xlsx.get_sheet("Export #{overflow_index.to_s.rjust(overflow_naming_width,"0")}")
+				end
+				custom_file = File.open(FilenameSuffixer.add_suffix(custom_file_name,overflow_index,overflow_naming_width),"w:utf-8") if export_custom
+
+				# Write headers to new files/sheet
+				csv << headers if export_csv
+				dat << headers if export_dat
+				tsv << headers if export_tsv
+				html.begin_table(headers) if export_html
+				sheet << headers if export_xlsx
+				if export_custom
+					custom_file.puts(headers.map{|v|"#{custom_quote}#{v}#{custom_quote}"}.join(custom_delimiter))
+				end
+
+				current_record_count = 0
+			end
+
 			# Write values to the various formats we may be exporting to
 			csv << record_values.map{|v|v.gsub(/[\r\n]/," ")} if export_csv
 			dat << record_values if export_dat
@@ -432,6 +495,8 @@ if dialog.getDialogResult == true
 			if export_custom
 				custom_file.puts(record_values.map{|v|"#{custom_quote}#{v}#{custom_quote}"}.join(custom_delimiter))
 			end
+
+			current_record_count += 1
 
 			# If were annotating concatenated values into single field lets do that now
 			if single_custom_metadata
