@@ -25,6 +25,7 @@ load File.join(script_directory,"Xlsx.rb")
 load File.join(script_directory,"CustomFieldBase.rb")
 load File.join(script_directory,"DAT.rb")
 load File.join(script_directory,"TSV.rb")
+load File.join(script_directory,"HTML.rb")
 
 # Load field class files
 fields_directory = File.join(script_directory,"Fields")
@@ -92,6 +93,12 @@ load_file_tab.appendTextField("custom_quote","Custom Quote","")
 load_file_tab.enabledOnlyWhenChecked("custom_file","export_custom")
 load_file_tab.enabledOnlyWhenChecked("custom_delimiter","export_custom")
 load_file_tab.enabledOnlyWhenChecked("custom_quote","export_custom")
+
+# Settings regarding overflow into new file/sheet when we exceed a given record count
+load_file_tab.appendSeparator("Record Overflow")
+load_file_tab.appendCheckBox("overflow_records","Overflow into new file/sheet when record count exceeds maximum",false)
+load_file_tab.appendSpinner("maximum_records","Maximum records per file/sheet",1_000_000,100,100_000_000,100)
+load_file_tab.enabledOnlyWhenChecked("maximum_records","overflow_records")
 
 cm_tab = dialog.addTab("cm_tab","Custom Metadata")
 cm_tab.appendCheckBox("apply_custom_metadata","Apply as Custom Metadata Fields",false)
@@ -283,6 +290,7 @@ if dialog.getDialogResult == true
 		csv = nil
 		dat = nil
 		tsv = nil
+		html = nil
 		xlsx = nil
 		sheet = nil
 		custom = nil
@@ -317,7 +325,7 @@ if dialog.getDialogResult == true
 		ensure_file_directory(values["dat_file"]) if export_dat
 		ensure_file_directory(values["tsv_file"]) if export_tsv
 
-		html = File.open(values["html_file"],"w:utf-8") if export_html
+		html = HTML.create(values["html_file"]) if export_html
 		csv = CSV.open(values["csv_file"],"w:utf-8") if export_csv
 		dat = DAT.create(values["dat_file"]) if export_dat
 		tsv = TSV.create(values["tsv_file"]) if export_tsv
@@ -332,26 +340,10 @@ if dialog.getDialogResult == true
 		csv << headers if export_csv
 		dat << headers if export_dat
 		tsv << headers if export_tsv
+		html.begin_table(headers) if export_html
 		sheet << headers if export_xlsx
 		if export_custom
 			custom_file.puts(headers.map{|v|"#{custom_quote}#{v}#{custom_quote}"}.join(custom_delimiter))
-		end
-
-		# If we're exporting to HTML we will write the initial structure to it
-		if export_html
-			html << "<!DOCTYPE HTML>"
-			html << "<html>"
-			html << "<head><style>"
-			html << ".label { vertical-align:top; }"
-			html << ".value { }"
-			html << "td { border-left:1px solid black; border-top:1px solid black; }"
-			html << "table { border-right:1px solid black; border-bottom:1px solid black; border-collapse:collapse; width: 100%; }"
-			html << "body { margin:50px 0px; padding:0px;text-align:center; font-family: arial; }"
-			html << "pre { white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word; max-height:250px; overflow-y:scroll;}"
-			html << "hr { margin-top: 40px; }"
-			html << "#content { width:1024px; margin:0px auto; text-align:left; padding:15px; border:1px dashed #333; }"
-			html << "</style></head>"
-			html << "<body><div id=\"content\">"
 		end
 
 		last_col = headers.size - 1
@@ -416,6 +408,7 @@ if dialog.getDialogResult == true
 			csv << record_values.map{|v|v.gsub(/[\r\n]/," ")} if export_csv
 			dat << record_values if export_dat
 			tsv << record_values if export_tsv
+			html << record_values if export_html
 			if export_xlsx
 				sheet << record_values.map do |v|
 					if v.is_a?(String) && v.size > 32000
@@ -427,14 +420,6 @@ if dialog.getDialogResult == true
 			end
 			if export_custom
 				custom_file.puts(record_values.map{|v|"#{custom_quote}#{v}#{custom_quote}"}.join(custom_delimiter))
-			end
-			if export_html
-				html << "<hr/>"
-				html << "<table>"
-				headers.size.times do |c|
-					html << "<tr><td class=\"label\"><b>#{headers[c]}</b></td><td class=\"value\"><pre>#{record_values[c]}</pre></td></tr>"
-				end
-				html << "</table>"
 			end
 
 			# If were annotating concatenated values into single field lets do that now
@@ -464,14 +449,11 @@ if dialog.getDialogResult == true
 		csv.close if !csv.nil?
 		dat.close if !dat.nil?
 		tsv.close if !tsv.nil?
+		html.close if !html.nil?
 		if !xlsx.nil?
 			xlsx.save(values["xlsx_file"])
 		end
 		custom_file.close if !custom_file.nil?
-		if !html.nil?
-			html << "</div></body></html>"
-			html.close
-		end
 
 		# Show a final progress depending on whether user aborted or not
 		if pd.abortWasRequested
