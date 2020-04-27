@@ -2,7 +2,7 @@
 Export Profile Plus
 ===================
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) ![This script was last tested in Nuix 7.8](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-7.8-green.svg)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) ![This script was last tested in Nuix 8.4](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-8.4-green.svg)
 
 View the [GitHub project here](https://github.com/Nuix/Export-Profile-Plus) or [download the latest release here](https://github.com/Nuix/Export-Profile-Plus/releases).
 
@@ -365,6 +365,40 @@ Yields a delimited list of custodian and path of each duplicate of a given item.
 ### Item Set Paths
 
 Yields a delimited list of paths for items which are a duplicate of a given item in select item sets, includes path of given item as well.
+
+### Term Counts and Occurrences
+
+Term counts for an item are how many distinct terms are present in a given set of text.  Term occurrences is a count of how many times a term occurs in a given set of text.  To demonstrate this with an example, imagine you have the following text:
+
+```
+The quick brown fox jumped over the lazy dogs.  The brown fox then hid among the dead brown grass.
+```
+
+| #  | Term        |  Occurrences |
+|----|-------------|--------------|
+| 1  | `The`       | 4            |
+| 2  | `quick`     | 1            |
+| 3  | `brown`     | 3            |
+| 4  | `fox`       | 2            |
+| 5  | `jumped`    | 1            |
+| 6  | `over`      | 1            |
+| 7  | `lazy`      | 1            |
+| 8  | `dogs`      | 1            |
+| 9  | `then`      | 1            |
+| 10 | `hid`       | 1            |
+| 11 | `among`     | 1            |
+| 12 | `dead`      | 1            |
+| 13 | `grass`     | 1            |
+|    | **Total**   | 19           |
+
+As you can see the example text above contains 13 distinct terms, but they occur overall a total of 19 times.  Nuix allows for collection of term statistics from either items' content text, properties or both.  Export Profile Plus offers several fields to report on term count and term occurrences for items:
+
+- **Content Term Count**
+- **Content Term Occurrences**
+- **Properties Term Count**
+- **Properties Term Occurrences**
+- **Properties and Content Term Count**
+- **Properties and Content Term Occurrences**
 
 ## Implementing New Fields
 
