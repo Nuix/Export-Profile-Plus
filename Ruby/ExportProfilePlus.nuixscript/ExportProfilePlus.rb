@@ -262,18 +262,14 @@ if dialog.getDialogResult == true
 	ProgressDialog.forBlock do |pd|
 		# Establish header order for export
 		headers = base_profile.getMetadata.map(&:getName) + values['custom_fields'].map(&:name)
-
-		#Allow custom fields to perform any initialization
-		values["custom_fields"].each do |custom_field|
+		# Sort and calculate custom values
+		values['custom_fields'].sort_by(&:dependencies).each do |custom_field|
+			#Allow custom fields to perform any initialization
 			pd.logMessage("Performing setup: #{custom_field.name}")
 			custom_field.setup(items)
-		end	
-
-		values["custom_fields"].each do |custom_field|
 			pd.logMessage("Attaching scripted field: #{custom_field.name}")
 			base_profile = custom_field.decorate(base_profile)
 		end
-
 		# Build Hash of {name => MetadataItem} that will be exported
 		export_fields = {}
 		base_profile.get_metadata.each { |m| export_fields[m.get_name] = m }

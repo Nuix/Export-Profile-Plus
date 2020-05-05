@@ -420,6 +420,7 @@ These methods can optionally be overridden in your custom class.  The provide ad
 - `tool_tip`: You can optionally override this method.  This method is expected to return a string containing tool tip text to be shown in the GUI for the given field.
 - `setup`: This method allows your field to perform any up front calculations it may need to perform before export begins.  This method will be provided the items the user selected before running the script.
 - `cleanup`: This method allows your field to perform any post export cleanup it may need to perform.
+- `dependencies`: Override this method and return an integer greater than 0 if your custom field should be calcuated after others (i.e. it has dependencies). Custom fields are sorted by the value returned by this method before being calculated.
 - `needs_item_sets`: Override this method and return `true` if your custom field requires knowing what item sets the user checked on the "Item Sets" tab.  When any of the user specified fields returns `true` via this method then the settings dialog will enforce that the user select at least one item set.
 - `needs_prod_sets`: Override this method and return `true` if your custom field requires knowing what production sets the user checked on the "Production Sets" tab.  When any of the user specified fields returns `true` via this method then the settings dialog will enforce that the user select at least one production set.
 
