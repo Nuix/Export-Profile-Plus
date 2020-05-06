@@ -395,10 +395,13 @@ As you can see the example text above contains 13 distinct terms, but they occur
 
 - **Content Term Count**
 - **Content Term Occurrences**
+- **Content Term Occurrences Per Page**
 - **Properties Term Count**
 - **Properties Term Occurrences**
 - **Properties and Content Term Count**
 - **Properties and Content Term Occurrences**
+
+Content Term Occurrences Per Page is calculated by dividing by the number of pages of the item's printed image. Items that have been slipsheeted or not printed are skipped. If there is custom metadata for Content Term Occurrences, that value will be used instead of computing the term occurrences.
 
 ## Implementing New Fields
 
