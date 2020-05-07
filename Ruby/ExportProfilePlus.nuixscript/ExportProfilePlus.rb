@@ -2,7 +2,8 @@
 # Needs Selected Items: true
 
 # Written by Jason Wells
-# Tested against Nuix 6.2
+# Contributions by Michael Kamida
+# Tested against Nuix 8.4
 
 #===================#
 # Load Dependencies #
@@ -260,18 +261,19 @@ if dialog.getDialogResult == true
 	end
 
 	ProgressDialog.forBlock do |pd|
-		#Allow custom fields to perform any initialization
-		values["custom_fields"].each do |custom_field|
+		# Establish header order for export
+		headers = base_profile.getMetadata.map(&:getName) + values['custom_fields'].map(&:name)
+		# Sort and calculate custom values
+		values['custom_fields'].sort_by(&:dependencies).each do |custom_field|
+			#Allow custom fields to perform any initialization
 			pd.logMessage("Performing setup: #{custom_field.name}")
 			custom_field.setup(items)
-		end	
-
-		values["custom_fields"].each do |custom_field|
 			pd.logMessage("Attaching scripted field: #{custom_field.name}")
 			base_profile = custom_field.decorate(base_profile)
 		end
-
-		export_fields = base_profile.getMetadata
+		# Build Hash of {name => MetadataItem} that will be exported
+		export_fields = {}
+		base_profile.get_metadata.each { |m| export_fields[m.get_name] = m }
 
 		pd.logMessage("Selected Items: #{items.size}")
 		if values["use_base_profile"]
@@ -370,8 +372,7 @@ if dialog.getDialogResult == true
 		end
 		custom_file = File.open(custom_file_name,"w:utf-8") if export_custom
 
-		# Get headers and write to all formats we're exporting to
-		headers = export_fields.map{|f|f.getName}
+		# Write headers to all formats we're exporting to
 		csv << headers if export_csv
 		dat << headers if export_dat
 		tsv << headers if export_tsv
@@ -396,20 +397,20 @@ if dialog.getDialogResult == true
 			end
 			
 			# Have each column evaluate against the given item and
-			# build up collection of column values into an array
-			record_values = export_fields.map{|f|f.evaluate(item)}
+			# build up collection of column values into a Hash
+			record_values = export_fields.transform_values { |f| f.evaluate(item) }
 
 			# If we're applying custom metadata for each column
 			# record it now
 			if apply_custom_metadata
 				cm = item.getCustomMetadata
-				headers.each_with_index do |header,header_index|
+				headers.each do |header|
 					# Handle a couple fields we know will give us an internal Nuix class when we call evaluateUnformatted
 					if header == "Position" || header == "Language"
-						cm[header] = record_values[header_index]
+						cm[header] = record_values[header]
 					else
 						# Record raw value as custom metadata
-						raw_value = export_fields[header_index].evaluateUnformatted(item)
+						raw_value = export_fields[header].evaluateUnformatted(item)
 
 						# Try to handle some of the undocumented internal data type evaluateUnformatted may provide back
 						if raw_value.nil?
@@ -417,7 +418,7 @@ if dialog.getDialogResult == true
 						elsif raw_value.is_a?(com.nuix.common.ByteSize)
 							raw_value = raw_value.getValue
 						elsif raw_value.is_a?(com.nuix.util.expression.MultiValue) || raw_value.is_a?(com.nuix.filetype.MimeType)
-							raw_value = record_values[header_index]
+							raw_value = record_values[header]
 						end
 
 						# First we will try to store as the actual data type returned by evaluateUnformatted
@@ -433,7 +434,7 @@ if dialog.getDialogResult == true
 
 						# As a fallback we will just store the value as a string like the script used to
 						if !raw_value_success
-							cm[header] = record_values[header_index]
+							cm[header] = record_values[header]
 						end
 					end
 				end
@@ -478,13 +479,15 @@ if dialog.getDialogResult == true
 				current_record_count = 0
 			end
 
+			# Get array of values sorted in order of the headers
+			ordered_values = headers.map { |h| record_values[h] }
 			# Write values to the various formats we may be exporting to
-			csv << record_values.map{|v|v.gsub(/[\r\n]/," ")} if export_csv
-			dat << record_values if export_dat
-			tsv << record_values if export_tsv
-			html << record_values if export_html
+			csv << ordered_values.map{|v|v.gsub(/[\r\n]/," ")} if export_csv
+			dat << ordered_values if export_dat
+			tsv << ordered_values if export_tsv
+			html << ordered_values if export_html
 			if export_xlsx
-				sheet << record_values.map do |v|
+				sheet << ordered_values.map do |v|
 					if v.is_a?(String) && v.size > 32000
 						next v[0...32000]
 					else
@@ -493,7 +496,7 @@ if dialog.getDialogResult == true
 				end
 			end
 			if export_custom
-				custom_file.puts(record_values.map{|v|"#{custom_quote}#{v}#{custom_quote}"}.join(custom_delimiter))
+				custom_file.puts(ordered_values.map{|v|"#{custom_quote}#{v}#{custom_quote}"}.join(custom_delimiter))
 			end
 
 			current_record_count += 1
@@ -501,15 +504,21 @@ if dialog.getDialogResult == true
 			# If were annotating concatenated values into single field lets do that now
 			if single_custom_metadata
 				custom_field_value = ""
-				headers.size.times do |col_index|
-					column_value = record_values[col_index]
+				headers.each do |header|
+					column_value = record_values[header]
 					next if scm_skip_empty && (column_value.nil? || column_value.strip.empty?)
+					
 					if include_names
-						custom_field_value << headers[col_index]
+						custom_field_value << header
 						custom_field_value << ": ".freeze
 					end
 					custom_field_value << column_value
-					custom_field_value << (col_index != last_col ? "; ".freeze : "".freeze)
+					custom_field_value << ';'
+				end
+				# End final value with ':' instead of ';'
+				unless custom_field_value.empty?
+					custom_field_value.chop!
+					custom_field_value << ':'
 				end
 				item.getCustomMetadata.putText(custom_field_name,custom_field_value)
 			end

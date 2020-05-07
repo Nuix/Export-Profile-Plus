@@ -57,6 +57,12 @@ class CustomFieldBase
 	def cleanup
 	end
 
+	# Allows the custom field to specify that it has dependencies and should be calculated after
+	# other fields.  Override and return an integer greater than 0 if it should follow other scripts
+	def dependencies
+		0
+	end
+
 	#Allows the custom field to specify that the user needs to select at least one item set
 	#for this field to operate.  Override and return true if you need a selected item set
 	def needs_item_set
