@@ -2,7 +2,8 @@
 # Needs Selected Items: true
 
 # Written by Jason Wells
-# Tested against Nuix 6.2
+# Contributions by Michael Kamida
+# Tested against Nuix 8.4
 
 #===================#
 # Load Dependencies #
@@ -486,7 +487,7 @@ if dialog.getDialogResult == true
 			tsv << ordered_values if export_tsv
 			html << ordered_values if export_html
 			if export_xlsx
-				sheet << oredered_values.map do |v|
+				sheet << ordered_values.map do |v|
 					if v.is_a?(String) && v.size > 32000
 						next v[0...32000]
 					else
