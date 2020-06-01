@@ -398,7 +398,10 @@ if dialog.getDialogResult == true
 			
 			# Have each column evaluate against the given item and
 			# build up collection of column values into a Hash
-			record_values = export_fields.transform_values { |f| f.evaluate(item) }
+			record_values = {}
+			export_fields.each do |k,v|
+				record_values[k] = v.evaluate(item)
+			end
 
 			# If we're applying custom metadata for each column
 			# record it now
