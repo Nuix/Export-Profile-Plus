@@ -178,21 +178,12 @@ dialog.validateBeforeClosing do |values|
 		next false
 	end
 
-	# If user did not select any script based fields make sure that was there intent
-	if values["custom_fields"].size < 1
-		if values["use_base_profile"]
-			message = "You have no additional fields selected, are you sure you want to proceed?"
-			title = "Proceed without additional fields?"
-			confirmed = CommonDialogs.getConfirmation(message,title)
-			if !confirmed
-				next false
-			end
-		else
-			# If we reached here neither a base profile nor script based fields were selected
-			# so we have nothing to be exported
-			CommonDialogs.showWarning("When not using a base profile, at least one additional field must be selected.")
-			next false
-		end
+	# If no base profile or custom fields selected, we have nothing to work with
+	if values["custom_fields"].size < 1 && !values["use_base_profile"]
+		message = "No base profile or custom fields selected, please either provide a base profile or "+
+			"check at least one field."
+		CommonDialogs.showWarning(message)
+		next false
 	end
 
 	# If exporting concatenated values into single custom metadata field make sure
