@@ -1,9 +1,7 @@
 # Menu Title: Export Profile Plus
-# Needs Selected Items: true
 
 # Written by Jason Wells
 # Contributions by Michael Kamida
-# Tested against Nuix 8.4
 
 #===================#
 # Load Dependencies #
@@ -43,7 +41,7 @@ require 'csv'
 
 #Make sure some items are selected
 if $current_selected_items.nil? || $current_selected_items.size < 1
-	CommonDialogs.showError("This script requires that some items be selected before running it.")
+	CommonDialogs.showError("This script requires that some items be selected before running it.","Export Profile Plus")
 	exit 1
 end
 
