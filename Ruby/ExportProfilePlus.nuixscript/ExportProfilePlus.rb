@@ -250,6 +250,12 @@ if dialog.getDialogResult == true
 	end
 
 	ProgressDialog.forBlock do |pd|
+		# Make sure messages written to progress dialog
+		# also make it into the logs
+		pd.onMessageLogged do |message|
+			puts message
+		end
+
 		# Establish header order for export
 		headers = base_profile.getMetadata.map(&:getName) + values['custom_fields'].map(&:name)
 		# Sort and calculate custom values
@@ -373,6 +379,8 @@ if dialog.getDialogResult == true
 
 		last_col = headers.size - 1
 
+		reported_slow_cols = {}
+
 		# Iterate each item
 		items.each_with_index do |item,item_index|
 			# Break from iteration if user requested abort in the progress dialog
@@ -384,12 +392,30 @@ if dialog.getDialogResult == true
 				pd.setSubStatus("#{item_index+1}/#{items.size}")
 				last_progress = Time.now
 			end
+
+			# We will log progress every 1000 items as well
+			if (item_index + 1) % 1000 == 0 || (item_index + 1) == items.size
+				pd.logMessage("#{item_index+1}/#{items.size}")
+			end
 			
 			# Have each column evaluate against the given item and
 			# build up collection of column values into a Hash
 			record_values = {}
 			export_fields.each do |k,v|
+				evaluate_start = Time.now
 				record_values[k] = v.evaluate(item)
+				evaluate_finish = Time.now
+				
+				cell_time = evaluate_finish - evaluate_start
+				if cell_time > 2.0
+					# This one cell took more than 1 second to calculate, which
+					# is a bit on the slow side, lets log that this is happening
+					# the first time and ignore this later
+					if !reported_slow_cols[k] == true
+						pd.logMessage("NOTICE OF SLOW COLUMN: '#{k}' took #{cell_time} seconds for a single item just now (further notices for this column will not be logged)")
+						reported_slow_cols[k] = true
+					end
+				end
 			end
 
 			# If we're applying custom metadata for each column
