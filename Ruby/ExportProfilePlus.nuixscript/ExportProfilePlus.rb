@@ -525,7 +525,7 @@ if dialog.getDialogResult == true
 			# If were annotating concatenated values into single field lets do that now
 			if single_custom_metadata
 				custom_field_value = ""
-				headers.each do |header|
+				headers.each_with_index do |header,header_index|
 					column_value = record_values[header]
 					next if scm_skip_empty && (column_value.nil? || column_value.strip.empty?)
 					
@@ -534,7 +534,7 @@ if dialog.getDialogResult == true
 						custom_field_value << ": ".freeze
 					end
 					custom_field_value << column_value
-					custom_field_value << scm_delmiter
+					custom_field_value << scm_delmiter if header_index != headers.size - 1
 				end
 				item.getCustomMetadata.putText(custom_field_name,custom_field_value)
 			end
