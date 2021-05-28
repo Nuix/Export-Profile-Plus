@@ -108,9 +108,11 @@ scm_tab.appendCheckBox("single_custom_metadata","Apply as Single Concatenated Cu
 scm_tab.appendTextField("scm_field_name","Field Name","ProfileValues")
 scm_tab.appendCheckBox("scm_include_names","Include Field Names",true)
 scm_tab.appendCheckBox("scm_skip_empty","Exclude Null or Empty Values",false)
+scm_tab.appendTextField("scm_delmiter","Delimiter (can be blank)","; ")
 scm_tab.enabledOnlyWhenChecked("scm_field_name","single_custom_metadata")
 scm_tab.enabledOnlyWhenChecked("scm_include_names","single_custom_metadata")
 scm_tab.enabledOnlyWhenChecked("scm_skip_empty","single_custom_metadata")
+scm_tab.enabledOnlyWhenChecked("scm_delmiter","single_custom_metadata")
 
 all_item_sets = $current_case.getAllItemSets
 # ItemSet.findDuplicates errors for item sets created with a scripted expression
@@ -315,6 +317,7 @@ if dialog.getDialogResult == true
 		custom_field_name = values["scm_field_name"]
 		scm_skip_empty = values["scm_skip_empty"]
 		single_custom_metadata = values["single_custom_metadata"]
+		scm_delmiter = values["scm_delmiter"]
 		apply_custom_metadata = values["apply_custom_metadata"]
 		overflow_records = values["overflow_records"]
 		maximum_records = values["maximum_records"]
@@ -531,12 +534,7 @@ if dialog.getDialogResult == true
 						custom_field_value << ": ".freeze
 					end
 					custom_field_value << column_value
-					custom_field_value << ';'
-				end
-				# End final value with ':' instead of ';'
-				unless custom_field_value.empty?
-					custom_field_value.chop!
-					custom_field_value << ':'
+					custom_field_value << scm_delmiter
 				end
 				item.getCustomMetadata.putText(custom_field_name,custom_field_value)
 			end
