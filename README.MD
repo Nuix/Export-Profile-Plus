@@ -288,6 +288,10 @@ For a given item, this field yields a delimited list of DOCIDs for every product
 
 For a given item, this field yields a delimited list of DOCIDs for specifically selected production set this item is a member of.  To determine which production sets are reported, select the relevant production sets in the production sets tab of the settings dialog.
 
+### Select Production Set Descendant DOCIDs
+
+Similar to **Select Production Set DOCIDs**, but instead of listing the DOCID of the given item for the selected production sets, it lists the descendant item's DOCIDs in the selected production sets.
+
 ### Descendant Names
 
 For a given item, lists a delimited listing of the localised names of all descendants.
