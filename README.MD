@@ -312,9 +312,13 @@ For a given item, yields the count of descendants a given item has which are aud
 
 Yields a delimited list of all custodians which have an MD5 duplicate of the given item.
 
+**Note:** Due to how this field is calculated, the performance is not ideal for applying the value across large numbers of items.  You may want to instead use the script [Top Level Dupe Info Propagation](https://github.com/Nuix/Top-Level-Dupe-Info-Propagation) if it meets your needs!
+
 ### Top Level All Custodians
 
 Yields a delimited list of all custodians which have a top level MD5 duplicate of the given item, if the item is itself top level
+
+**Note:** Due to how this field is calculated, the performance is not ideal for applying the value across large numbers of items.  You may want to instead use the script [Top Level Dupe Info Propagation](https://github.com/Nuix/Top-Level-Dupe-Info-Propagation) if it meets your needs!
 
 ### Family Count
 
